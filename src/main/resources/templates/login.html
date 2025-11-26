@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Logowanie</title>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            width: 320px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; margin-top: 0; }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 8px; margin-top: 4px; }
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            border: none;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        button:hover { background: #1d4ed8; }
+        .message { margin-top: 10px; font-size: 14px; }
+        .error { color: #b91c1c; }
+        .success { color: #15803d; }
+    </style>
+</head>
+<body>
+<div class="card">
+  <h2>Logowanie</h2>
+  <form id="loginForm">
+    <label>Email:
+      <input type="email" id="email" required>
+    </label>
+    <label>Hasło:
+      <input type="password" id="password" required>
+    </label>
+    <button type="submit">Zaloguj</button>
+  </form>
+  <div id="message" class="message"></div>
+</div>
+<script>
+    const form = document.getElementById('loginForm');
+    const messageDiv = document.getElementById('message');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        messageDiv.textContent = '';
+        messageDiv.className = 'message';
+        const body = {
+            email: emailInput.value,
+            password: passwordInput.value
+        };
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                messageDiv.textContent = err.message || "Błędne dane logowania";
+                messageDiv.classList.add('error');
+                return;
+            }
+            const user = await response.json();
+            messageDiv.textContent = "Zalogowano jako: " + user.firstName + " " + user.lastName;
+            messageDiv.classList.add('success');
+            localStorage.setItem('user', JSON.stringify(user));
+
+                     const roleName = user.role && user.role.name ? user.role.name : null;
+
+            if (roleName === 'STAFF') {
+                window.location.href = "/staff/dashboard";
+            } else {
+                window.location.href = "/client/dashboard";
+            }
+        } catch (e) {
+            messageDiv.textContent = "Błąd połączenia z serwerem.";
+            messageDiv.classList.add('error');
+        }
+    });
+</script>
+
+</body>
+</html>

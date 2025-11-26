@@ -1,5 +1,7 @@
 package com.hotel.ReservationApp.Models.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hotel.ReservationApp.Models.Role.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,4 +26,12 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private String password;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 }

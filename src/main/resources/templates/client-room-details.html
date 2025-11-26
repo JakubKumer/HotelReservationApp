@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegóły pokoju</title>
+
+    <style>
+        body { font-family: Arial; background: #f3f4f6; margin: 0; }
+        main { max-width: 800px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; }
+        img { width: 100%; border-radius: 6px; }
+        .back { margin-bottom: 16px; display: inline-block; cursor: pointer; color: #2563eb; }
+    </style>
+</head>
+<body>
+
+<main>
+    <a class="back" onclick="history.back()">← Powrót</a>
+
+    <h2 id="title">Pokój</h2>
+
+    <img id="image" src="" alt="Zdjęcie pokoju">
+
+    <p><b>Pojemność:</b> <span id="capacity"></span></p>
+    <p><b>Piętro:</b> <span id="floor"></span></p>
+    <p><b>Cena za noc:</b> <span id="price"></span> zł</p>
+    <p><b>Opis:</b></p>
+    <p id="description"></p>
+
+</main>
+
+<script>
+    async function loadRoom() {
+        const id = window.location.pathname.split("/").pop();
+
+        const res = await fetch(`/api/rooms/${id}`);
+        const room = await res.json();
+
+        document.getElementById("title").textContent = "Pokój " + room.roomNumber;
+        document.getElementById("capacity").textContent = room.capacity;
+        document.getElementById("floor").textContent = room.floor;
+        document.getElementById("price").textContent = room.pricePerNight;
+        document.getElementById("description").textContent = room.description ?? "";
+
+        document.getElementById("image").src = `/api/rooms/${id}/image`;
+    }
+
+    loadRoom();
+</script>
+
+</body>
+</html>

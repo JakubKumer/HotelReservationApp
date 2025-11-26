@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<section th:fragment="roomsSection" id="section-rooms" class="section active">
+    <div class="content-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Pokoje</h2>
+        <button class="btn btn-primary btn-sm" id="showAddRoomBtn">
+            + Dodaj pokój
+        </button>
+    </div>
+    <p class="text-muted">
+        Zarządzaj pokojami hotelowymi: dodawanie, edycja oraz przegląd listy dostępnych pokoi.
+    </p>
+    <div class="card mb-3 d-none" id="addRoomCard">
+        <div class="card-body">
+            <h5 class="card-title">Dodaj nowy pokój</h5>
+            <form id="addRoomForm" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Numer pokoju</label>
+                    <input id="roomNumber" type="text" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Piętro</label>
+                    <input id="floor" type="number" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Pojemność</label>
+                    <input id="capacity" type="number" min="1" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Cena za noc (PLN)</label>
+                    <input id="pricePerNight" type="number" min="0" step="0.01" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Opis</label>
+                    <textarea id="description" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success btn-sm" type="submit">Zapisz pokój</button>
+                    <button id="cancelAddRoomBtn" class="btn btn-outline-secondary btn-sm" type="button">
+                        Anuluj
+                    </button>
+                </div>
+            </form>
+            <div id="addRoomMessage" class="mt-2 small"></div>
+        </div>
+    </div>
+    <div class="card mt-3" id="roomsListCard">
+        <div class="card-body">
+            <h5 class="card-title">Lista pokoi</h5>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>Numer</th>
+                        <th>Piętro</th>
+                        <th>Pojemność</th>
+                        <th>Cena / noc</th>
+                        <th>Status</th>
+                        <th>Opis</th>
+                        <th>Zdjęcie</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="roomsTableBody">
+                    <tr><td colspan="7" class="text-muted small">Brak pokoi w bazie.</td></tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul id="roomsPagination" class="pagination pagination-sm mb-0"></ul>
+                </nav>
+                <input id="roomImageFile" type="file" class="d-none" accept="image/*">
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

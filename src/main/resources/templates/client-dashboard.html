@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel klienta</title>
+
+  <style>
+        body { font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; }
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { margin: 0; font-size: 20px; }
+        header button {
+            background: #ef4444;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        h2 { margin-top: 0; }
+
+        .rooms-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform .15s;
+        }
+
+        .room-card:hover {
+            transform: scale(1.02);
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #ddd;
+        }
+
+        .room-info {
+            padding: 12px;
+        }
+
+        .room-info h3 {
+            margin: 0 0 6px;
+            font-size: 18px;
+        }
+
+        .pagination {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pagination button {
+            padding: 6px 14px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .pagination .active {
+            background: #1f2937;
+            color: white;
+            border-color: #1f2937;
+        }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Hotel Reservation – panel klienta</h1>
+  <button id="logoutBtn">Wyloguj</button>
+</header>
+
+<main>
+  <h2>Dostępne pokoje</h2>
+
+  <div id="roomsList" class="rooms-container"></div>
+
+  <div id="pagination" class="pagination"></div>
+
+</main>
+
+<script>
+    // --- Autoryzacja ---
+    const userJson = localStorage.getItem('user');
+    if (!userJson) window.location.href = "/login";
+
+    const user = JSON.parse(userJson);
+    if (user.role.name === "STAFF") window.location.href = "/staff/dashboard";
+
+    document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+    };
+
+    // --- Pobieranie pokoi ---
+    let rooms = [];
+    let currentPage = 1;
+    const perPage = 10;
+
+    async function loadRooms() {
+        const res = await fetch("/api/rooms");
+        rooms = await res.json();
+        renderRooms();
+        renderPagination();
+    }
+
+    function renderRooms() {
+        const container = document.getElementById("roomsList");
+        container.innerHTML = "";
+
+        const start = (currentPage - 1) * perPage;
+        const pageRooms = rooms.slice(start, start + perPage);
+
+        pageRooms.forEach(room => {
+            const card = document.createElement("div");
+            card.className = "room-card";
+            card.onclick = () => {
+                window.location.href = `/client/room/${room.id}`;
+            };
+
+            card.innerHTML = `
+                <img src="/api/rooms/${room.id}/image" onerror="this.src='/placeholder.jpg'">
+                <div class="room-info">
+                    <h3>Pokój ${room.roomNumber}</h3>
+                    <div>Ilość osób:1-${room.capacity} os.</div>
+                    <div>Cena: ${room.pricePerNight} zł / noc</div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(rooms.length / perPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let page = 1; page <= totalPages; page++) {
+            const btn = document.createElement("button");
+            btn.textContent = page;
+            if (page === currentPage) btn.classList.add("active");
+
+            btn.onclick = () => {
+                currentPage = page;
+                renderRooms();
+                renderPagination();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            };
+
+            pagination.appendChild(btn);
+        }
+    }
+
+    loadRooms();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside class="sidebar d-flex flex-column p-3" th:fragment="staffSidebar">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="brand text-white">
+      Hotel Reservation
+    </div>
+  </div>
+  <div class="mb-4">
+    <div class="small text-gray-400">Zalogowany jako</div>
+    <div id="staffName" class="fw-semibold">...</div>
+    <span class="badge bg-danger-subtle text-danger-emphasis role-badge mt-1">STAFF</span>
+  </div>
+  <nav class="nav nav-pills flex-column mb-auto" id="sidebarMenu">
+    <a class="nav-link active" href="#" data-section="rooms">
+      🛏 Pokoje
+    </a>
+    <a class="nav-link" href="#" data-section="reservations">
+      📅 Rezerwacje
+    </a>
+    <a class="nav-link" href="#" data-section="guests">
+      👤 Goście haha
+    </a>
+  </nav>
+  <hr class="text-secondary">
+  <button id="logoutBtn" class="btn btn-outline-light btn-sm mt-auto">
+    Wyloguj
+  </button>
+</aside>
+</body>
+</html>
